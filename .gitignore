@@ -1,0 +1,30 @@
+# Dependencies
+/node_modules
+/.pnpm-lock.yaml
+
+# Build artifacts
+/dist
+/build
+/out
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables - IMPORTANT
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
