@@ -1,0 +1,25 @@
+
+
+# Defines the services (containers) that make up your app
+services:
+  # The name of our database service
+  postgres:
+    # Use the official PostgreSQL image from Docker Hub
+    image: postgres:14-alpine
+    # Always restart the container if it stops
+    restart: always
+    # Set environment variables for the database
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=devtrack360
+    # Map port 5432 on the host to 5432 in the container
+    ports:
+      - '5432:5432'
+    # Persist the database data on the host machine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+# Defines the named volume used by the service
+volumes:
+  postgres_data:
