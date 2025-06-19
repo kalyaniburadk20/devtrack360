@@ -4,7 +4,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
-const { getSimpleCompletion } = require('./llmService'); // Import the new LLM service
+const { getSimpleCompletion } = require('./llmService');
+const authRoutes = require('./routes/authRoutes'); // Import auth routes
+const projectRoutes = require('./routes/projectRoutes'); // Import project routes
 
 // Create a new PostgreSQL connection pool
 const pool = new Pool({
@@ -42,16 +44,16 @@ app.get('/api', (req, res) => {
 app.get('/api/db-test', async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT NOW()'); // Simple query to get the current time from DB
+    const result = await client.query('SELECT NOW()');
     res.json({ message: "Database connection successful!", time: result.rows[0].now });
-    client.release(); // Release the client back to the pool
+    client.release();
   } catch (err) {
     console.error("Database connection error", err);
     res.status(500).json({ error: "Failed to connect to the database." });
   }
 });
 
-// New LLM test endpoint
+// LLM test endpoint
 app.post('/api/ai/test', async (req, res) => {
   const { prompt } = req.body;
   if (!prompt) {
@@ -67,6 +69,11 @@ app.post('/api/ai/test', async (req, res) => {
     res.status(500).json({ error: 'Failed to get a response from the AI. Check server logs for details.' });
   }
 });
+
+// Use new authentication and project routes
+app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
