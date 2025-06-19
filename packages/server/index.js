@@ -3,7 +3,8 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const { Pool } = require('pg'); // Import the pg Pool
+const { Pool } = require('pg');
+const { getSimpleCompletion } = require('./llmService'); // Import the new LLM service
 
 // Create a new PostgreSQL connection pool
 const pool = new Pool({
@@ -23,6 +24,15 @@ app.use(express.json());
 
 // --- API Routes ---
 
+// Optional: Root route for a welcome message
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: "Welcome to the DevTrack360 API!",
+    api_status: "Running",
+    documentation: "Access API endpoints via /api path."
+  });
+});
+
 // Simple root API route
 app.get('/api', (req, res) => {
   res.json({ message: "Hello from DevTrack360 Server!" });
@@ -41,6 +51,22 @@ app.get('/api/db-test', async (req, res) => {
   }
 });
 
+// New LLM test endpoint
+app.post('/api/ai/test', async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ error: 'Prompt is required in the request body.' });
+  }
+
+  console.log(`Received AI prompt: "${prompt}"`);
+  const aiResponse = await getSimpleCompletion(prompt);
+
+  if (aiResponse) {
+    res.json({ prompt: prompt, response: aiResponse });
+  } else {
+    res.status(500).json({ error: 'Failed to get a response from the AI. Check server logs for details.' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
